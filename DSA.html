@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Data Structure Visualizer - Harsha Vardhan</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- INLINE CSS -->
+  <style>
+    :root {
+      --bg: #050816;
+      --card: #0a0e27;
+      --accent: #2196F3;
+      --accent-soft: rgba(33, 150, 243, 0.25);
+      --text: #e5e7ff;
+      --muted: #9ca3c7;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #111827 0, #020617 45%, #000 100%);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .wrapper {
+      width: 100%;
+      max-width: 960px;
+      background: linear-gradient(145deg, rgba(15,23,42,0.96), rgba(8,15,35,0.96));
+      border-radius: 18px;
+      padding: 24px 22px 20px;
+      border: 1px solid rgba(148,163,184,0.25);
+      box-shadow: 0 24px 80px rgba(15,23,42,0.8);
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 18px;
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      letter-spacing: 0.03em;
+      background: linear-gradient(120deg, #38bdf8, #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    header p {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .controls-row {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+      margin-bottom: 18px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    label {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-right: 6px;
+    }
+
+    select, input[type="text"] {
+      background: #020617;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.5);
+      padding: 8px 14px;
+      color: var(--text);
+      font-size: 0.9rem;
+      outline: none;
+      min-width: 150px;
+    }
+
+    select:focus, input[type="text"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent-soft);
+    }
+
+    .input-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #1d4ed8);
+      color: #fff;
+      box-shadow: 0 10px 25px rgba(37,99,235,0.45);
+    }
+
+    .btn-primary:hover { transform: translateY(-1px); }
+
+    .btn-ghost {
+      background: rgba(15,23,42,0.9);
+      color: var(--muted);
+      border: 1px solid rgba(148,163,184,0.5);
+    }
+
+    .btn-ghost:hover {
+      background: rgba(15,23,42,1);
+      color: #e5e7eb;
+    }
+
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      padding: 4px 2px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .meta-row span strong {
+      color: #7dd3fc;
+    }
+
+    .meta-badges {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      padding: 3px 8px;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Visualizer panel */
+    .panel {
+      background: radial-gradient(circle at top left, rgba(56,189,248,0.12), rgba(15,23,42,0.95));
+      border-radius: 14px;
+      padding: 14px 12px;
+      border: 1px solid rgba(148,163,184,0.3);
+      margin-bottom: 14px;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 0.86rem;
+      color: var(--muted);
+    }
+
+    .indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 3px rgba(34,197,94,0.2);
+    }
+
+    .legend {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-size: 0.75rem;
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .legend-pill {
+      width: 12px;
+      height: 4px;
+      border-radius: 999px;
+      background: var(--accent);
+    }
+
+    .legend-pill-secondary {
+      background: #22c55e;
+    }
+
+    .visual-area {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      min-height: 120px;
+      padding: 10px 4px;
+      overflow-x: auto;
+    }
+
+    .structure-stack {
+      flex-direction: column-reverse;
+      align-items: center;
+    }
+
+    .structure-queue,
+    .structure-list {
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .node {
+      min-width: 52px;
+      min-height: 52px;
+      background: rgba(15,23,42,0.96);
+      border-radius: 11px;
+      border: 1px solid rgba(148,163,184,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.95rem;
+      position: relative;
+      box-shadow: 0 10px 30px rgba(15,23,42,0.9);
+      transform-origin: center;
+      transition: transform 0.18s ease, opacity 0.18s ease, border-color 0.18s ease;
+    }
+
+    .node.stack-top::after {
+      content: "TOP";
+      position: absolute;
+      top: -16px;
+      font-size: 0.7rem;
+      color: #f97316;
+    }
+
+    .node.queue-front::before {
+      content: "FRONT";
+      position: absolute;
+      top: -16px;
+      font-size: 0.7rem;
+      color: #22c55e;
+    }
+
+    .node.queue-rear::after {
+      content: "REAR";
+      position: absolute;
+      bottom: -16px;
+      font-size: 0.7rem;
+      color: #eab308;
+    }
+
+    .node.list-head::before {
+      content: "HEAD";
+      position: absolute;
+      top: -16px;
+      font-size: 0.7rem;
+      color: #22c55e;
+    }
+
+    .node.added {
+      transform: scale(1.18) translateY(-2px);
+      border-color: var(--accent);
+    }
+
+    .node.removed {
+      opacity: 0;
+      transform: scale(0.6) translateY(8px);
+    }
+
+    .arrow {
+      width: 26px;
+      height: 2px;
+      background: var(--accent-soft);
+      position: relative;
+      border-radius: 999px;
+    }
+
+    .arrow::after {
+      content: "";
+      position: absolute;
+      right: -3px;
+      top: -3px;
+      border-left: 6px solid var(--accent);
+      border-top: 4px solid transparent;
+      border-bottom: 4px solid transparent;
+    }
+
+    /* Log */
+    .log-panel {
+      background: #020617;
+      border-radius: 12px;
+      padding: 10px 10px 6px;
+      border: 1px solid rgba(30,64,175,0.9);
+      font-size: 0.8rem;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+
+    .log-panel strong {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #60a5fa;
+    }
+
+    .log-entry {
+      margin-top: 4px;
+      color: var(--muted);
+    }
+
+    .log-entry span {
+      color: #93c5fd;
+    }
+
+    @media (max-width: 640px) {
+      .wrapper { padding: 18px 14px; }
+      header h1 { font-size: 1.5rem; }
+      .meta-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+      .controls-row { flex-direction: column; align-items: stretch; }
+      .input-group { width: 100%; justify-content: space-between; }
+      input[type="text"] { flex: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrapper">
+  <header>
+    <h1>Data Structure Visualizer</h1>
+    <p>Stack • Queue • Singly Linked List</p>
+  </header>
+
+  <div class="controls-row">
+    <div class="input-group">
+      <label for="structureSelect">Structure</label>
+      <select id="structureSelect">
+        <option value="stack">Stack (LIFO)</option>
+        <option value="queue">Queue (FIFO)</option>
+        <option value="list">Linked List</option>
+      </select>
+    </div>
+
+    <div class="input-group">
+      <label for="valueInput">Value</label>
+      <input type="text" id="valueInput" placeholder="e.g. 10, A, X" />
+    </div>
+
+    <button class="btn btn-primary" id="btnAdd">
+      ➕ Add
+    </button>
+
+    <button class="btn btn-ghost" id="btnRemove">
+      ➖ Remove
+    </button>
+  </div>
+
+  <div class="meta-row">
+    <span>Current: <strong id="metaStruct">Stack</strong> • Size: <strong id="metaSize">0</strong></span>
+    <div class="meta-badges">
+      <div class="badge">DSA • Visualizer</div>
+      <div class="badge">HTML • CSS • JS</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <div class="indicator">
+        <span class="dot"></span>
+        <span id="stateText">Ready</span>
+      </div>
+      <div class="legend">
+        <span><span class="legend-pill"></span> Active Node</span>
+        <span><span class="legend-pill legend-pill-secondary"></span> Head / Front</span>
+      </div>
+    </div>
+
+    <div id="visualArea" class="visual-area structure-stack">
+      <!-- Nodes will be injected here -->
+    </div>
+  </div>
+
+  <div class="log-panel" id="logPanel">
+    <strong>Operations log</strong>
+    <!-- log entries -->
+  </div>
+</div>
+
+<!-- INLINE JS -->
+<script>
+  const visualArea   = document.getElementById('visualArea');
+  const structSelect = document.getElementById('structureSelect');
+  const valueInput   = document.getElementById('valueInput');
+  const btnAdd       = document.getElementById('btnAdd');
+  const btnRemove    = document.getElementById('btnRemove');
+  const metaStruct   = document.getElementById('metaStruct');
+  const metaSize     = document.getElementById('metaSize');
+  const stateText    = document.getElementById('stateText');
+  const logPanel     = document.getElementById('logPanel');
+
+  let stack = [];
+  let queue = [];
+  let list  = [];
+
+  function getActiveStructure() {
+    const type = structSelect.value;
+    if (type === 'stack') return stack;
+    if (type === 'queue') return queue;
+    return list;
+  }
+
+  function setActiveStructure(arr) {
+    const type = structSelect.value;
+    if (type === 'stack') stack = arr;
+    else if (type === 'queue') queue = arr;
+    else list = arr;
+  }
+
+  function log(message) {
+    const div = document.createElement('div');
+    div.className = 'log-entry';
+    const time = new Date().toLocaleTimeString();
+    div.innerHTML = `<span>[${time}]</span> ${message}`;
+    logPanel.appendChild(div);
+    logPanel.scrollTop = logPanel.scrollHeight;
+  }
+
+  function updateMeta(len) {
+    const type = structSelect.options[structSelect.selectedIndex].text;
+    metaStruct.textContent = type;
+    metaSize.textContent = len;
+  }
+
+  function animateNode(node, cls) {
+    node.classList.add(cls);
+    setTimeout(() => node.classList.remove(cls), 220);
+  }
+
+  function render() {
+    const type = structSelect.value;
+    let data = getActiveStructure();
+    visualArea.innerHTML = '';
+
+    visualArea.classList.remove('structure-stack', 'structure-queue', 'structure-list');
+    if (type === 'stack') visualArea.classList.add('structure-stack');
+    else if (type === 'queue') visualArea.classList.add('structure-queue');
+    else visualArea.classList.add('structure-list');
+
+    if (!data.length) {
+      stateText.textContent = 'Empty structure';
+      updateMeta(0);
+      return;
+    }
+
+    data.forEach((val, index) => {
+      const node = document.createElement('div');
+      node.className = 'node';
+      node.textContent = val;
+
+      if (type === 'stack' && index === data.length - 1) {
+        node.classList.add('stack-top');
+      }
+
+      if (type === 'queue') {
+        if (index === 0) node.classList.add('queue-front');
+        if (index === data.length - 1) node.classList.add('queue-rear');
+      }
+
+      if (type === 'list') {
+        if (index === 0) node.classList.add('list-head');
+      }
+
+      visualArea.appendChild(node);
+
+      if (type === 'list' && index < data.length - 1) {
+        const arrow = document.createElement('div');
+        arrow.className = 'arrow';
+        visualArea.appendChild(arrow);
+      }
+    });
+
+    stateText.textContent = 'Updated';
+    updateMeta(data.length);
+  }
+
+  function addValue() {
+    const val = valueInput.value.trim();
+    const type = structSelect.value;
+
+    if (!val) {
+      stateText.textContent = 'Enter a value first';
+      return;
+    }
+
+    let data = getActiveStructure();
+
+    if (type === 'stack') {
+      data.push(val);
+      log(`PUSH "${val}" to Stack`);
+    } else if (type === 'queue') {
+      data.push(val);
+      log(`ENQUEUE "${val}" to Queue`);
+    } else {
+      data.push(val);
+      log(`INSERT "${val}" at tail of Linked List`);
+    }
+
+    setActiveStructure(data);
+    valueInput.value = '';
+    render();
+
+    const nodes = visualArea.querySelectorAll('.node');
+    if (nodes.length) animateNode(nodes[nodes.length - 1], 'added');
+  }
+
+  function removeValue() {
+    const type = structSelect.value;
+    let data = getActiveStructure();
+
+    if (!data.length) {
+      stateText.textContent = 'Nothing to remove';
+      log(`Tried to remove from empty ${type.toUpperCase()}`);
+      return;
+    }
+
+    if (type === 'stack') {
+      const removed = data.pop();
+      log(`POP "${removed}" from Stack`);
+    } else if (type === 'queue') {
+      const removed = data.shift();
+      log(`DEQUEUE "${removed}" from Queue`);
+    } else {
+      const removed = data.shift();
+      log(`REMOVE HEAD "${removed}" from Linked List`);
+    }
+
+    setActiveStructure(data);
+
+    // animate first or last node depending on type
+    const nodes = visualArea.querySelectorAll('.node');
+    if (nodes.length) {
+      const target = (type === 'stack') ? nodes[nodes.length - 1] : nodes[0];
+      animateNode(target, 'removed');
+      setTimeout(render, 180);
+    } else {
+      render();
+    }
+  }
+
+  // Events
+  btnAdd.addEventListener('click', addValue);
+  btnRemove.addEventListener('click', removeValue);
+
+  valueInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addValue();
+    }
+  });
+
+  structSelect.addEventListener('change', () => {
+    stateText.textContent = 'Switched structure';
+    render();
+  });
+
+  // Initial render
+  render();
+</script>
+
+</body>
+</html>
